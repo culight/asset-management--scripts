@@ -1,0 +1,130 @@
+Ignite Sports Branding Abstraction
+
+Created by Akshay Pimprikar
+18 April 2016
+____________________________________________
+
+Overview
+_________
+
+    All the brand specific images have been consolidated into Images.xcassets folder of the Xcode project.
+    All the service urls for backend services are declared in ‘CommandDefs.h’ under Networking folder of the Xcode project.
+    Python scripts provided allow the developer to automatically pull assets out of their original folders
+    and into an Excel document. The user can modify or remove an asset in the excel sheet and the appropriate
+    injection script can be used to automatically make the changes in the original folder.
+
+    The high-level objective of these scripts is to allow quick and easy replacement of old content with new
+    content. They encourage generic, easily readable naming conventions and also consolidate the assets, making
+    them easier to manage.
+
+Setup
+_____
+
+    This script was developed and tested using Python 2.7.10 on a Mac. To get setup with python,
+    I would recommend the following approach:
+
+    - Open Terminal
+
+    - Install Homebrew
+        $ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+    - Insert Homebrew in your PATH variable
+        in your home directory:
+        - vi .profile
+        - Add the following line: export PATH=/usr/local/bin:/usr/local/sbin:$PATH
+
+    - Install Python using Homebrew
+        $ brew install python
+
+    - Install pip
+        $ sudo easy_install pip
+
+    - Install Virtual Environment
+        $ pip install virtualenv
+
+    If any issues arise or if you would like more details, please visit the following link for reference:
+    http://docs.python-guide.org/en/latest/starting/install/osx/
+
+    Once these resources are setup, you should be able to run the script as described in the examples below.
+
+
+Usage
+______
+
+    Extracting images:
+
+        Instructions:
+            1. Find the path to the project folder where images will be extracted
+
+            2. Run the extraction script:
+
+                python image_extraction.py -i path/to/image-folder/ -o name-of-excel-doc
+
+                * If you provide no output, the name of the output folder will be the path's base name by default.
+
+            3. An output directory will be created in your project directory with the path
+               "asset-management/images/folder-name/"
+
+
+        Example:
+            python image_extraction.py -i Users/apimpr/Documents/ignite-sports-mobiles-ios/src/MiamiHeat/Images.xcassets
+
+            All of the images in the Images.xcassets will be copied over to the excel spreadsheet with their corresponding
+            metadata. Each separate folder with images will be exported to a different spreadsheet.
+            This excel document along with a "replaced" and "source" folder will be created in a new directory
+            within the parent directory of the MiamiHeat/ path (i.e. ...ignite-sports-mobiles-ios/src/MiamiHeat/asset-management/).
+            This will be the working directory for the injection script.
+
+            The name of the excel document will automatically be set to the name of the folder from which it extracts
+            (i.e. for Images.xcassets it will be "Images.xlsx"). You may specify a different name for the excel document by
+            including a -o tag followed your desired name.
+
+        Known Issues/Concerns:
+            - If the script encounters multiple files with the same name, it will acknowledge the first occurrence only
+            - The script is designed to parse through directories with multiple folders,
+              but has problems with single folders
+            - Corrupt image files cause the script to crash
+
+
+    Injecting images:
+
+        Instructions:
+            1. Run the extraction script (if you haven't already) and the Excel document will be auto-created
+
+            2. In the excel doc, take note of which images you want to replace or remove
+
+            3a. If you want to remove an image write "remove" in hte source name column of the spreadsheet
+
+            3b. If you want replace an image with an image of a different name, type the name of the new image
+                in the source name column
+
+            3c. If you want to replace the image with an image of the same name, leave the source name image blank
+
+            4. Add your new images to the source folder in the working directory
+                (i.e. ...ignite-sports-mobiles-ios/src/MiamiHeat/asset-management/source/)
+
+            5. Run the injection script:
+
+                python image_injection.py -i path/to/asset-management/ -e name-of-excel-doc
+
+                * -e flag is only needed if the name of the excel doc is different from the base name of the path
+
+            6. Images in the "source" folder will replaced with the current images, and current images will
+               be sent to the "replaced" folder - double-check the results
+
+            7. To update the excel document, re-run the extraction script
+
+        Example:
+            python image_injection.py -i Users/apimpr/Documents/ignite-sports-mobiles-ios/src/MiamiHeat/asset-management/
+
+        Known Issues/Concerns:
+            - Hidden bugs
+
+
+Next Steps
+___________
+
+- This approach can used for a quick rebranding of the current app to suit any other team
+- All service url strings in CommandDefs.h need to be manually replaced for a new backend. 
+- Url string replacement scripts can be created in the future
+- More testing and feature discovery
